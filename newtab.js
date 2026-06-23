@@ -33,6 +33,22 @@ function newPicsumUrl() {
   return `https://picsum.photos/id/${id}/2400/1350`;
 }
 
+// Once a Picsum request fails (DNS/network unreachable), stop hammering that
+// domain for the rest of this session and serve seeds instead.
+let picsumUnreachable = false;
+
+function randomSeedUrl() {
+  const current = liveUrl();
+  const choices = SEED_URLS.filter((u) => u !== current);
+  return choices[Math.floor(Math.random() * choices.length)] || SEED_URLS[0];
+}
+
+// Next "fresh" background to try — a new Picsum image normally, or a seed
+// once Picsum has proven unreachable this session.
+function nextFreshUrl() {
+  return picsumUnreachable ? randomSeedUrl() : newPicsumUrl();
+}
+
 function saveHistoryState() {
   chrome.storage.local.set({ bgHistory, bgHistoryPos, bgPinned, bgPinnedUrl });
 }
@@ -98,8 +114,10 @@ chrome.storage.local.get(["bgHistory", "bgHistoryPos", "bgPinned", "bgPinnedUrl"
     // Resume at the live end of the saved history
     bgHistoryPos = -1;
     applyBg(liveUrl(), null, () => {
-      // Saved image is no longer reachable — try one fresh image, then give up to a seed
-      const url = newPicsumUrl();
+      // Saved image is no longer reachable — if it was a Picsum URL, treat
+      // the whole domain as unreachable rather than retrying it again.
+      if (/picsum\.photos/.test(liveUrl() || "")) picsumUnreachable = true;
+      const url = nextFreshUrl();
       pushUrl(url);
       saveHistoryState();
       applyBg(url, null, applySeedFallback);
@@ -125,14 +143,16 @@ document.getElementById("bg-next").addEventListener("click", (e) => {
   const btn = e.currentTarget;
   if (bgHistoryPos === -1) {
     // At the live end — fetch a brand-new image
-    const url = newPicsumUrl();
+    const url = nextFreshUrl();
     pushUrl(url);
     applyBg(url, btn, () => {
-      // That id was dead — drop it and try once more
+      // That one failed — if it was Picsum, stop trying that domain for the
+      // rest of this session and fall back to a seed instead of retrying it.
+      if (/picsum\.photos/.test(url)) picsumUnreachable = true;
       bgHistory.pop();
-      const retryUrl = newPicsumUrl();
+      const retryUrl = nextFreshUrl();
       pushUrl(retryUrl);
-      applyBg(retryUrl, btn);
+      applyBg(retryUrl, btn, applySeedFallback);
       saveHistoryState();
     });
     saveHistoryState();
