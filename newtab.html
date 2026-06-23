@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>New Tab</title>
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body>
+  <div id="bg"></div>
+  <div id="bg-overlay"></div>
+
+  <main>
+    <div class="widget" data-widget="search-web">
+      <div class="widget-handle" aria-hidden="true">⠿</div>
+      <form class="search-form" method="POST" action="https://duckduckgo.com/" target="_self" autocomplete="off">
+        <input name="q" type="text" placeholder="Search the web" autofocus required spellcheck="false">
+        <button type="submit" aria-label="Search web">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </form>
+    </div>
+
+
+    <div class="widget" data-widget="clock">
+      <div class="widget-handle" aria-hidden="true">⠿</div>
+      <div id="clock">
+        <div id="time">--:--</div>
+        <div id="date"></div>
+      </div>
+    </div>
+
+    <div class="widget" data-widget="favorites">
+      <div class="widget-handle" aria-hidden="true">⠿</div>
+      <section id="favorites" aria-label="Favorites"></section>
+    </div>
+  </main>
+
+  <div id="action-buttons">
+    <button id="edit-layout" title="Edit layout">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <button id="add-fav" title="Add favorite">+</button>
+    <div id="bg-controls">
+      <button id="bg-prev" title="Previous background">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button id="bg-pin" title="Pin this background">
+        <svg id="pin-icon-outline" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 1 3 3v1l2 2v2H7V8l2-2V5a3 3 0 0 1 3-3z"/><line x1="12" y1="10" x2="12" y2="22"/></svg>
+        <svg id="pin-icon-filled" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none" style="display:none"><path d="M12 2a3 3 0 0 1 3 3v1l2 2v2H7V8l2-2V5a3 3 0 0 1 3-3z"/><rect x="11" y="10" width="2" height="12" rx="1"/></svg>
+      </button>
+      <button id="bg-next" title="Next background">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <dialog id="fav-dialog">
+    <form method="dialog" id="fav-form">
+      <h3 id="fav-dialog-title">Add favorite</h3>
+      <label>Name<input name="name" required maxlength="40"></label>
+      <label>URL<input name="url" type="url" required placeholder="https://example.com"></label>
+      <input type="hidden" name="id">
+      <div class="actions">
+        <button value="cancel" type="button" id="fav-cancel">Cancel</button>
+        <button value="delete" type="button" id="fav-delete" hidden>Delete</button>
+        <button value="save" id="fav-save">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="newtab.js"></script>
+</body>
+</html>

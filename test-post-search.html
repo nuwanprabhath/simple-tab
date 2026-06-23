@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DuckDuckGo POST search - feasibility test</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.5; color: #222; }
+  h1 { font-size: 22px; }
+  form { display: flex; gap: 8px; margin: 16px 0 24px; }
+  input[type=text] { flex: 1; padding: 10px 14px; font-size: 16px; border: 1px solid #bbb; border-radius: 24px; }
+  button { padding: 10px 18px; font-size: 15px; border: 0; border-radius: 24px; background: #de5833; color: white; cursor: pointer; }
+  ol { background: #f6f6f6; padding: 14px 14px 14px 32px; border-radius: 8px; }
+  code { background: #eee; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+  .note { color: #555; font-size: 14px; margin-top: 24px; }
+  h2 { font-size: 16px; margin-top: 28px; }
+  .label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 18px; }
+</style>
+</head>
+<body>
+  <h1>DuckDuckGo - POST search feasibility test</h1>
+
+  <p>This page submits the query as a real top-level POST navigation. If POST works, the address bar on the results page will show <code>https://duckduckgo.com/</code> (or <code>/html/</code>) with <strong>no <code>?q=...</code></strong> after it.</p>
+
+  <div class="label">A. POST to duckduckgo.com/ (main JS site)</div>
+  <form method="POST" action="https://duckduckgo.com/" target="_self">
+    <input type="text" name="q" placeholder="Type your query..." autofocus autocomplete="off" required>
+    <button type="submit">Search (POST main)</button>
+  </form>
+
+  <div class="label">B. POST to duckduckgo.com/html/ (no-JS lite version)</div>
+  <form method="POST" action="https://duckduckgo.com/html/" target="_self">
+    <input type="text" name="q" placeholder="Type your query..." autocomplete="off" required>
+    <button type="submit">Search (POST html)</button>
+  </form>
+
+  <div class="label">C. GET baseline (query will appear in URL - for comparison)</div>
+  <form method="GET" action="https://duckduckgo.com/" target="_self">
+    <input type="text" name="q" placeholder="Type your query..." autocomplete="off" required>
+    <button type="submit" style="background:#666">Search (GET)</button>
+  </form>
+
+  <h2>What to look for</h2>
+  <ol>
+    <li>Submit form <strong>A</strong>. On the results page, check the address bar:
+      <ul>
+        <li><strong>Pass:</strong> URL is <code>https://duckduckgo.com/</code> with no query string, and results render.</li>
+        <li><strong>Soft fail:</strong> URL becomes <code>https://duckduckgo.com/?q=...</code> - DDG redirected POST to GET.</li>
+      </ul>
+    </li>
+    <li>If A fails, try form <strong>B</strong> (the /html/ endpoint is the no-JS version - historically the most reliable POST target).</li>
+    <li>Form <strong>C</strong> is the GET baseline - it should always put <code>?q=...</code> in the URL.</li>
+  </ol>
+
+  <p class="note">DuckDuckGo's own settings page has a "Use POST method" option, but their endpoints accept POST regardless. If neither A nor B works, we'll inspect the form on duckduckgo.com directly with DevTools and replicate the exact payload.</p>
+</body>
+</html>

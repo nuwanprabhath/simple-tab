@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Simple Tab",
+  "version": "0.1.0",
+  "description": "Custom new tab with clock, favorites, rotating backgrounds, and a POST-based DuckDuckGo search.",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": ["storage"]
+}
