@@ -17,7 +17,7 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 48px 24px 24px;
+  padding: 48px 0 24px;
   gap: 16px;
 }
 
@@ -57,7 +57,9 @@ body.edit-mode .fav.fav-drag-over { outline: 2px solid rgba(255,255,255,0.85); b
 
 /* ---- Search bars ---- */
 .search-form {
-  width: 100%;
+  /* main has no horizontal padding (so favorites can span the full viewport),
+     so keep the gutters here instead */
+  width: calc(100% - 48px);
   max-width: 560px;
   display: flex;
   align-items: center;
@@ -150,8 +152,9 @@ body.edit-mode .fav.fav-drag-over { outline: 2px solid rgba(255,255,255,0.85); b
   touch-action: none;
   user-select: none;
 }
-.resize-handle.left { left: calc(50% - var(--fav-half-width, 350px) - 18px); }
-.resize-handle.right { left: calc(50% + var(--fav-half-width, 350px)); }
+/* Clamped inside the viewport so they stay grabbable at full width */
+.resize-handle.left { left: max(0px, calc(50% - var(--fav-half-width, 350px) - 18px)); }
+.resize-handle.right { left: min(calc(100% - 18px), calc(50% + var(--fav-half-width, 350px))); }
 .resize-handle::before {
   content: "";
   position: absolute;

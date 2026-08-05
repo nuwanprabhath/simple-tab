@@ -346,27 +346,33 @@ favGrid.addEventListener("drop", async (e) => {
 // ---------- Favorites width resize ----------
 const favWidget = document.querySelector('.widget[data-widget="favorites"]');
 const MIN_FAV_WIDTH = 280;
-let favWidth = 700;
+const DEFAULT_FAV_WIDTH = 700;
+// What the user asked for, vs. what currently fits on screen.
+let desiredFavWidth = DEFAULT_FAV_WIDTH;
+let favWidth = DEFAULT_FAV_WIDTH;
 
 function maxFavWidth() {
-  return Math.min(900, window.innerWidth - 48);
+  return window.innerWidth;
 }
 
 function applyFavWidth(w) {
-  favWidth = Math.round(Math.max(MIN_FAV_WIDTH, Math.min(maxFavWidth(), w)));
+  desiredFavWidth = Math.round(Math.max(MIN_FAV_WIDTH, w));
+  favWidth = Math.max(MIN_FAV_WIDTH, Math.min(maxFavWidth(), desiredFavWidth));
   favGrid.style.maxWidth = `${favWidth}px`;
   favWidget.style.setProperty("--fav-half-width", `${favWidth / 2}px`);
 }
 
 function saveFavWidth() {
-  chrome.storage.local.set({ favWidth });
+  chrome.storage.local.set({ favWidth: desiredFavWidth });
 }
 
 chrome.storage.local.get("favWidth", (d) => {
-  applyFavWidth(typeof d.favWidth === "number" ? d.favWidth : 700);
+  applyFavWidth(typeof d.favWidth === "number" ? d.favWidth : DEFAULT_FAV_WIDTH);
 });
 
-window.addEventListener("resize", () => applyFavWidth(favWidth));
+// Re-clamp against the new viewport, but keep the width the user picked so it
+// comes back when the window is widened again.
+window.addEventListener("resize", () => applyFavWidth(desiredFavWidth));
 
 function setupResizeHandle(handle, sign) {
   handle.draggable = false;
